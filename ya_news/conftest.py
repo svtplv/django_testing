@@ -6,7 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from news.constants import COMMENT_TEXT, NEW_COMMENT_TEXT
-from news.models import News, Comment
+from news.models import Comment, News
 
 
 @pytest.fixture
@@ -42,7 +42,7 @@ def comment(news, author):
 @pytest.fixture
 def comments(news, author):
     now = timezone.now()
-    for index in range(2):
+    for index in range(5):
         comment = Comment.objects.create(
             news=news,
             author=author,
@@ -71,13 +71,6 @@ def bulk_news():
 @pytest.fixture
 def home_url():
     return reverse('news:home')
-
-
-@pytest.fixture
-def home_object_list(client, bulk_news, home_url):
-    response = client.get(home_url)
-    object_list = response.context['object_list']
-    return object_list
 
 
 @pytest.fixture
@@ -120,20 +113,3 @@ def comment_form_data():
 def upd_comment_form_data():
     form_data = {'text': NEW_COMMENT_TEXT}
     return form_data
-
-
-# @pytest.fixture
-# # Фикстура запрашивает другую фикстуру создания заметки.
-# def slug_for_args(note):
-#     # И возвращает кортеж, который содержит slug заметки.
-#     # На то, что это кортеж, указывает запятая в конце выражения.
-#     return note.slug,
-
-
-# @pytest.fixture
-# def form_data():
-#     return {
-#         'title': 'Новый заголовок',
-#         'text': 'Новый текст',
-#         'slug': 'new-slug'
-#     }
