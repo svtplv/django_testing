@@ -33,7 +33,7 @@ class TestLogic:
         comment_count = Comment.objects.count()
         assert comment_count == exp_comment_count
         if exp_increase:
-            comment = Comment.objects.all().last()
+            comment = Comment.objects.last()
             assert comment.text == comment_form_data['text']
             assert comment.author == author
             assert comment.news == news

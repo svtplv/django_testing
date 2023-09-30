@@ -4,10 +4,10 @@ from django.contrib.auth import get_user_model
 from django.forms.models import model_to_dict
 from django.test import Client, TestCase
 from django.urls import reverse
+from pytils.translit import slugify
 
 from notes.forms import WARNING
 from notes.models import Note
-from pytils.translit import slugify
 
 
 User = get_user_model()
@@ -39,9 +39,9 @@ class TestNoteCreation(TestCaseMixin):
         response = self.auth_client.post(self.url, data=self.form_data)
         self.assertRedirects(response, self.redirect_url)
         self.assertEqual(Note.objects.count(), 1)
-        self.form_data.update(author_id=self.author.id)
-        new_note = Note.objects.get()
-        self.assertDictContainsSubset(self.form_data, new_note.__dict__)
+        self.form_data.update(author=self.author.id)
+        new_note = Note.objects.last()
+        self.assertDictContainsSubset(self.form_data, model_to_dict(new_note))
 
     def test_anonymous_user_cant_create_note(self):
         response = self.client.post(self.url, data=self.form_data)
@@ -71,7 +71,7 @@ class TestNoteCreation(TestCaseMixin):
         response = self.auth_client.post(self.url, data=self.form_data)
         self.assertRedirects(response, self.redirect_url)
         self.assertEqual(Note.objects.count(), 1)
-        new_note = Note.objects.get()
+        new_note = Note.objects.last()
         expected_slug = slugify(self.form_data['title'])
         self.assertEqual(new_note.slug, expected_slug)
 
@@ -97,6 +97,7 @@ class TestNoteEditAndDelete(TestCaseMixin):
         response = self.auth_client.post(self.edit_url, self.form_data)
         self.assertRedirects(response, self.redirect_url)
         self.note.refresh_from_db()
+        self.form_data.update(author=self.author.id)
         self.assertDictContainsSubset(self.form_data, model_to_dict(self.note))
 
     def test_other_user_cant_edit_note(self):
