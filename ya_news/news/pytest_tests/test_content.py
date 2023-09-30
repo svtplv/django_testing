@@ -1,8 +1,8 @@
 import pytest
 from django.conf import settings
 
-from .lazy_constants import ANON_CLIENT, AUTHOR_CLIENT
 from ..forms import CommentForm
+from .lazy_constants import ANON_CLIENT, AUTHOR_CLIENT
 
 
 @pytest.mark.django_db
